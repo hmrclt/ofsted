@@ -1,0 +1,9 @@
+@import helper.{inputRadioGroup => _, _}
+
+@(key: String, form: Form[Int])(implicit request: Request[_], messages: Messages)
+
+@formpage(key, form) {
+
+    <input type="text" value="@{form(key).value.getOrElse("")}" name="@key" id="@key" />
+
+}

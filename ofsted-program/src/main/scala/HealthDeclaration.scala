@@ -25,9 +25,7 @@ case class HealthDeclaration (
 
 object HealthDeclaration {
 
-  type StackInner = Fx.fx8[UniformAsk[String,?], UniformSelect[Gender,?], UniformSelect[HealthCondition,?], UniformAsk[Date,?], UniformAsk[Address,?], UniformAsk[Option[String],?], UniformAsk[Int,?], UniformAsk[Boolean,?]]
-
-  type Stack = FxAppend[StackInner, FxAppend[NameAndContact.Stack, FxAppend[InsuranceRestriction.Stack, HealthCondition.Stack]]]
+  type Stack = Fx.fx8[UniformAsk[String,?], UniformSelect[Gender,?], UniformSelect[HealthCondition,?], UniformAsk[Date,?], UniformAsk[Address,?], UniformAsk[Option[String],?], UniformAsk[Int,?], UniformAsk[Boolean,?]]
 
   def uniform[R : _uniform[String,?] : _uniformSelect[Gender,?] : _uniformSelect[HealthCondition,?] : _uniform[Date,?] : _uniform[Address,?] : _uniform[Option[String],?] : _uniform[Int,?] : _uniform[Boolean,?]]: Eff[R, HealthDeclaration] = (
     NameAndContact.uniform, 

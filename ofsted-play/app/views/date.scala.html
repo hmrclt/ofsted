@@ -1,0 +1,29 @@
+@(key: String, form: Form[java.time.LocalDate])(implicit request: Request[_], messages: Messages)
+
+@formpage(key, form) {
+    <fieldset>
+        <legend>
+            <span class="form-hint">@Messages("sdil.start-date.example")</span>
+        </legend>
+        <div class="form-date">
+            @form.errors.map { err => <span class="error-message">@Messages(err.message)</span> }
+            @for(field <- List("day", "month", "year")) {
+                <div class="form-group form-group-@{field}">
+                    <label class="form-label" for="@{field}">@Messages(field)</label>
+                    <input class="form-control @if(form(field).hasErrors) {form-control-error}"
+                           id="@{field}"
+                           name="@{field}"
+                           value="@{form(field).value}"
+                           @{field match {
+                               case "year" =>
+                               "maxlength=4"
+                               case _ =>
+                               "maxlength=2"
+                           }}
+                    >
+                </div>
+                }
+
+        </div>
+    </fieldset>
+}

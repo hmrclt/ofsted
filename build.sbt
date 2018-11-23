@@ -1,10 +1,10 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-val uniformVersion = "0.2.3"
+val uniformVersion = "0.2.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
-//    ofstedProgramJS,
+    ofstedProgramJS,
     ofstedProgramJVM,
 //    `ofsted-prototype`,
     `ofsted-play`
@@ -77,7 +77,7 @@ lazy val `ofsted-program` = crossProject(JSPlatform, JVMPlatform)
     libraryDependencies ++= Seq(
       "com.beachape" %%% "enumeratum" % "1.5.13",
       "com.luketebbs.uniform" %%% "core" % uniformVersion, 
-      "com.luketebbs.uniform" %%% "interpreter-logictable" % "0.2.3-SNAPSHOT" % "test"
+      "com.luketebbs.uniform" %%% "interpreter-logictable" % uniformVersion % "test"
     )
   )
 
@@ -104,6 +104,7 @@ lazy val `ofsted-play` = project
     libraryDependencies ++= Seq(
       filters,
       guice,
-      "com.luketebbs.uniform" %%% "interpreter-play26" % uniformVersion
+      "com.lihaoyi" %% "upickle" % "0.7.1",
+      "com.luketebbs.uniform" %% "interpreter-play26" % "0.2.4-SNAPSHOT"
     )
   )

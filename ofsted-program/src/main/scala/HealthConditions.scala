@@ -29,7 +29,7 @@ object HealthCondition extends Enum[HealthCondition] {
   type Stack = Fx2[UniformAsk[String,?], UniformSelect[HealthCondition,?]]
 
   def uniform[R : _uniform[String,?] : _uniformSelect[HealthCondition,?]]: Eff[R, Map[HealthCondition, String]] =
-    uaskNOf[R, HealthCondition]("healthconditions", HealthCondition.values.toSet) >>= { 
+    uaskNOf[R, HealthCondition]("healthconditions", HealthCondition.values.toSet) flatMap { 
       _.map { hc => uask[R, String](s"healthcondition-${hc.toString}").map{d => (hc,d)} }.toList.sequence.map(_.toMap)
     }
 }
