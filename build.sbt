@@ -1,12 +1,12 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-val uniformVersion = "0.2.4"
+val uniformVersion = "60301d1a3f1a25117194253ddbddaeb54217e29b-SNAPSHOT"
 
 lazy val root = project.in(file("."))
   .aggregate(
     ofstedProgramJS,
     ofstedProgramJVM,
-//    `ofsted-prototype`,
+    `ofsted-prototype`,
     `ofsted-play`
   )
   .settings(
@@ -65,7 +65,7 @@ lazy val commonSettings = Seq(
   ),
   scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings"),
   libraryDependencies ++= Seq(
-    "org.atnos" %%% "eff" % "5.2.0",
+    "org.atnos" %%% "eff" % "5.4.1",
     "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
   )
 )
@@ -76,7 +76,7 @@ lazy val `ofsted-program` = crossProject(JSPlatform, JVMPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "com.beachape" %%% "enumeratum" % "1.5.13",
-      "com.luketebbs.uniform" %%% "core" % uniformVersion, 
+      "com.luketebbs.uniform" %%% "core" % uniformVersion,
       "com.luketebbs.uniform" %%% "interpreter-logictable" % uniformVersion % "test"
     )
   )
@@ -91,7 +91,9 @@ lazy val `ofsted-prototype` = project
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "org.querki" %%% "jquery-facade" % "1.2",
-      "com.luketebbs.uniform" %%% "interpreter-js" % uniformVersion
+      "org.scala-js" %%% "scalajs-java-time" % "0.2.5",
+      "com.luketebbs.uniform" %%% "interpreter-js" % uniformVersion,
+      "com.luketebbs.uniform" %%% "govuk-widgets" % uniformVersion
     )
   )
   .enablePlugins(ScalaJSPlugin)
@@ -105,6 +107,8 @@ lazy val `ofsted-play` = project
       filters,
       guice,
       "com.lihaoyi" %% "upickle" % "0.7.1",
-      "com.luketebbs.uniform" %% "interpreter-play26" % "0.2.4-SNAPSHOT"
+      "com.luketebbs.uniform" %% "interpreter-play26" % uniformVersion,
+      "com.chuusai" %% "shapeless" % "2.3.3",
+      "com.luketebbs.uniform" %%% "govuk-widgets" % uniformVersion
     )
   )

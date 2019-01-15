@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="ofsted/style.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="ofsted/favicon.ico">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="eGMS.accessibility" scheme="WCAG" content="Double-A">
+        <meta name="dcterms.date" content="2018-01-01T00:00:00Z">
+        <meta name="dc.keywords" content="Find an inspection report and registered childcare">
+        <meta name="dc.description" content="Find an inspection report and registered childcare">
+        <meta name="dc.title" content="Find an inspection report and registered childcare">
+        <meta name="dc.subject" scheme="IPSV" content="Education and training, adult and community learning, schools, colleges, further education, childminders, nurseries, children's homes, fostering and adoption">
+        <meta name="dc.subject" scheme="ofsted" content="Inspection reports and registered childcare">
+        <meta name="dc.language" scheme="ISO 639-2/T" content="eng">
+        <link href="jquery-ui/jquery-ui.theme.min.css" media="screen" rel="stylesheet" type="text/css">
+        <link href="jquery-ui/jquery-ui.min.css" media="screen" rel="stylesheet" type="text/css">
+        <title>Ofsted Prototype</title>
+    </head>
+    
+    <body class=" js-enabled">
+        <script> document.body.className = document.body.className + ' js-enabled'; </script>
+
+        <div class="container">
+            <a class="skip-link" href="#main">Skip to main content</a>
+        </div>
+        <div class="main-content">
+            <div class="cookie-banner" style="display: block;">
+                <div class="container">
+                    <p class="cookie-banner__message">
+                        Ofsted uses cookies to make the site simpler.
+                        <a href="https://reports.ofsted.gov.uk/privacy-and-cookies">Find out more about cookies</a>
+                    </p>
+                    <button class="cookie-banner__close">Close</button>
+                </div>
+            </div>
+            <header class="header">
+                <div class="container">
+                    <a class="header__home-link" href="https://reports.ofsted.gov.uk/">
+                        <span class="nonvisual">Ofsted homepage</span>
+                        <img class="header__logo" src="ofsted/logo.svg" alt="Ofsted Logo">
+                    </a>
+                </div>
+                <div class="banners">
+                    <div class="container">
+                    </div>
+                </div>
+                <div class="phase-beta">
+                    <div class="container">
+                        <p>
+                            <strong class="phase-beta__tag">Feedback</strong>
+                            <span>Your <a href="https://reports.ofsted.gov.uk/feedback">feedback</a> will help us to improve this service.</span>
+                        </p>
+                    </div>
+                </div>
+            </header>
+            
+            <div id="main" tabindex="-1">
+                <div class="module title-block title-block--large">
+                    <div class="container">
+                        <h1 class="heading--title title-block__heading">@Messages(s"$key.label")</h1>
+                        <p class="heading--sub title-block__subheading">You can find reports for schools, colleges, childminders, nurseries, children’s homes and more in England.</p>
+                    </div>
+                </div>
+
+                <div class="container container--search">
+                    <div class="row">
+                        <div class="col two-thirds-sm">
+                            <div id="mainBody">
+                                @body
+                            </div>
+                        </div>
+                        <div class="col one-third-sm details-column details--home">
+                            <hr class="separator">
+                            <div class="module homepage-links info-block">
+                                <h2 class="info-block__title">More from Ofsted</h2>
+                                <ul class="list-unstyled info-block__list info-block__list--rhn">
+                                    <li><a href="https://www.gov.uk/government/organisations/ofsted">Inspection guidance and news</a></li>
+                                    <li><a href="https://reports.ofsted.gov.uk/search?latest_report_date_start=28-09-2018">Check inspection reports published last week</a></li>
+                                    <li><a href="https://reports.ofsted.gov.uk/childcare">Check if childcare is registered</a></li>
+                                    <li><a href="https://reports.ofsted.gov.uk/mat">Find a multi-academy trust</a></li>
+                                    <li><a href="https://reports.ofsted.gov.uk/use-our-data">Use our data</a></li>
+
+                                </ul>
+                            </div>
+                            <div class="module homepage-links info-block">
+                                <h2 class="info-block__title">Elsewhere on the web</h2>
+                                <ul class="list-unstyled info-block__list info-block__list--rhn">
+                                    <li><a href="https://www.compare-school-performance.service.gov.uk/">Compare schools and colleges</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <ul class="footer__links list-inline">
+                    <li><a href="https://reports.ofsted.gov.uk/terms-and-conditions">Terms of use</a></li>
+                    <li><a href="https://reports.ofsted.gov.uk/copyright">Copyright</a></li>
+                    <li><a href="https://reports.ofsted.gov.uk/privacy-and-cookies">Privacy statement and cookie policy</a></li>
+                    <li><a href="https://www.gov.uk/government/publications/ofsted-privacy-notices">Ofsted's privacy notices</a></li>
+                    <li><a href="https://contact.ofsted.gov.uk/contact-form">Contact us</a></li>
+                </ul>
+                <div class="footer_crown-copyright">
+                    <p class="footer__copy-right"><a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/">© Crown copyright</a></p>
+                </div>
+            </div>
+        </footer>
+        
+        <div class="pac-container pac-logo" style="display: none;"></div>
+
+
+
+    <div id="devdialog" title="Uniform Development Panel" style="z-index: -1000;">
+        <h3>Messages</h3>
+        <div>
+          <div class="controlgroup">
+            <label for="enable-messages">Enabled</label>
+            <input type="checkbox" name="enable-messages" id="enable-messages" onchange="enableMessages()">
+            <label for="debug-messages">Debug</label>
+            <input type="checkbox" name="debug-messages" id="debug-messages" onchange="enableMessages()">
+            <button onclick="reloadMessages()">Reload</button>
+          </div>
+        <p>More text</p>
+        </div>
+        <h3>State</h3>
+        <div id="tabs-2">
+            <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+        </div>
+        <h3>Blah2</h3>
+            <div id="tabs-3">
+                <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+                <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+            </div>
+    </div>
+
+    <script type="text/javascript">var ssoUrl = "";</script>
+
+    <script type="text/javascript" src="../target/scala-2.12/ofsted-prototype-fastopt.js"></script>
+	  <script src="jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

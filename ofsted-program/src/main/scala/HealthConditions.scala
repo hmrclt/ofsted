@@ -26,10 +26,10 @@ object HealthCondition extends Enum[HealthCondition] {
   case object AlcoholDrugDependency    extends HealthCondition
   case object InfectiousDiseases       extends HealthCondition
 
-  type Stack = Fx2[UniformAsk[String,?], UniformSelect[HealthCondition,?]]
+  type Stack = Fx2[UniformAsk[String,?], UniformAsk[Set[HealthCondition],?]]
 
-  def uniform[R : _uniform[String,?] : _uniformSelect[HealthCondition,?]]: Eff[R, Map[HealthCondition, String]] =
-    uaskNOf[R, HealthCondition]("healthconditions", HealthCondition.values.toSet) flatMap { 
+  def uniform[R : _uniform[String,?] : _uniform[Set[HealthCondition],?]]: Eff[R, Map[HealthCondition, String]] =
+    uask[R, Set[HealthCondition]]("healthconditions") flatMap { 
       _.map { hc => uask[R, String](s"healthcondition-${hc.toString}").map{d => (hc,d)} }.toList.sequence.map(_.toMap)
     }
 }

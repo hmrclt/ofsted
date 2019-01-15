@@ -5,11 +5,22 @@ import org.atnos.eff._
 import cats.implicits._
 import java.time.{ LocalDate => Date }
 
+case class Name(
+  forename: String,
+  surname: String,
+  gender: Gender
+)
+
+case class BirthPlace(
+  town: String,
+  country: String
+)
+
 case class NameAndContact (
   name: Name,
   gender: Gender,
   dob: Date,
-  placeofBirth: (Town, Country),
+  placeofBirth: BirthPlace,
   postalAddress: Address,
   telephone: String,
   mobile: String,
@@ -19,25 +30,15 @@ case class NameAndContact (
 
 object NameAndContact {
 
-  type Stack = Fx.fx5[UniformAsk[String,?], UniformSelect[Gender,?], UniformAsk[Date, ?], UniformAsk[Address, ?], UniformAsk[Option[String], ?]]
-
-  def askName[R : _uniform[String,?]]: Eff[R, Name] = (
-    uask[R, String]("forename"),
-    uask[R, String]("surname")
-  ).tupled
-
-  def uniform[R : _uniform[String,?] : _uniformSelect[Gender,?] : _uniform[Date,?] : _uniform[Address,?] : _uniform[Option[String],?]]: Eff[R, NameAndContact] = (
-    askName,
-    uaskOneOf[R, Gender]("gender", Gender.values.toSet),
+  def uniform[R : _uniform[String,?] : _uniform[Gender,?] : _uniform[Date,?] : _uniform[Address,?] : _uniform[Option[String],?] : _uniform[Name,?] : _uniform[BirthPlace,?]]: Eff[R, NameAndContact] = (
+    uask[R, Name]("name"),
+    uask[R, Gender]("gender"),
     uask[R, Date]("dateOfBirth"),
-    (
-      uask[R, String]("townOfBirth"),
-      uask[R, String]("countryOfBirth")
-    ).tupled,
+    uask[R, BirthPlace]("placeOfBirth"),
     uask[R, Address]("postalAddress"),
     uask[R, String]("telephone"),
     uask[R, String]("mobile"),
     uask[R, Option[String]]("emailAddress"),
     uask[R, String]("applicantType")
-    ).mapN(NameAndContact.apply)
+  ).mapN(NameAndContact.apply)
 }

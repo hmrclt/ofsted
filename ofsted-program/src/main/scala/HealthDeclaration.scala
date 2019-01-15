@@ -25,10 +25,10 @@ case class HealthDeclaration (
 
 object HealthDeclaration {
 
-  type Stack = Fx.fx8[UniformAsk[String,?], UniformSelect[Gender,?], UniformSelect[HealthCondition,?], UniformAsk[Date,?], UniformAsk[Address,?], UniformAsk[Option[String],?], UniformAsk[Int,?], UniformAsk[Boolean,?]]
+  type Stack = Fx.fx10[UniformAsk[String,?], UniformAsk[Gender,?], UniformAsk[Set[HealthCondition],?], UniformAsk[Date,?], UniformAsk[Address,?], UniformAsk[Option[String],?], UniformAsk[Int,?], UniformAsk[Boolean,?],  UniformAsk[BirthPlace,?], UniformAsk[Name,?]]
 
-  def uniform[R : _uniform[String,?] : _uniformSelect[Gender,?] : _uniformSelect[HealthCondition,?] : _uniform[Date,?] : _uniform[Address,?] : _uniform[Option[String],?] : _uniform[Int,?] : _uniform[Boolean,?]]: Eff[R, HealthDeclaration] = (
-    NameAndContact.uniform, 
+  def uniform[R : _uniform[String,?] : _uniform[Gender,?] : _uniform[Set[HealthCondition],?] : _uniform[Date,?] : _uniform[Address,?] : _uniform[Option[String],?] : _uniform[Int,?] : _uniform[Boolean,?] : _uniform[BirthPlace,?] : _uniform[Name,?]]: Eff[R, HealthDeclaration] = (
+    NameAndContact.uniform,
     (
       uask[R, Int]("under1"),
       uask[R, Int]("over1")

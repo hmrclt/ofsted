@@ -1,0 +1,1 @@
+../target/scala-2.12/ofsted-prototype-fastopt.js
