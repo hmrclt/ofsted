@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-val uniformVersion = "60301d1a3f1a25117194253ddbddaeb54217e29b-SNAPSHOT"
+val uniformVersion = "6972290e09964573c39bfb6f7fa2fb83a7dd67ee-SNAPSHOT"
 
 lazy val root = project.in(file("."))
   .aggregate(

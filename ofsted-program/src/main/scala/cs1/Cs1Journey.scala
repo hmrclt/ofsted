@@ -6,7 +6,9 @@ import cats.implicits._
 import enumeratum._
 import ofsted._
 import java.time.{LocalDate => Date}
-import java.io.File
+//import java.io.File
+
+case class File(file: String)
 
 sealed trait ServiceType extends EnumEntry
 object ServiceType extends Enum[ServiceType] {
@@ -46,7 +48,7 @@ case class Individual (
   title: String,
   firstName: String,
   surname: String,
-  dob: Date,
+  dateOfBirth: Date,
   position: String,
   management: Boolean,
   contactChildren: Boolean
@@ -97,8 +99,8 @@ case class HoldingCompany (
 
 case class Organisation (
   refusedApplication: Option[RefusedApplication], //
-  orgSector: OrganisationSector, //
-  orgType: OrganisationType, //
+  organisationSector: OrganisationSector, //
+  organisationType: OrganisationType, //
   name: String, //
   address: Address, //
   email: String, //
@@ -164,8 +166,8 @@ case class Cs1Form(
   accessReqDisabilityAct2005: Option[String],
   premisesSecurity: String,
   staffPosts: Option[Staff],
-  staffPostsTimes: (Int,Int),
-  staffLivingPremises: Boolean,
+  staffPostsTimes: (Int,Int,Boolean),
+  service: Service,
   establishmentChargesRange: String,
   managerTitle: String,
   managerForename: String,
@@ -187,47 +189,50 @@ case class RefusedApplication(
 
 case class Staff(
   staffPosition: String,
-  staffDuties: String,
-  fullTime: Boolean
+  staffDuties: String
 )
 
 sealed trait ChildrensHomeType extends EnumEntry
 object ChildrensHomeType extends Enum[ChildrensHomeType] {
   val values = findValues
-  case object CHS extends ChildrensHomeType
-  case object CHR extends ChildrensHomeType
-  case object CHRSS extends ChildrensHomeType
-  case object CHBS extends ChildrensHomeType
-  case object CH extends ChildrensHomeType
+  case object SecureChildrensHome extends ChildrensHomeType
+  case object RefugeUnderSection51OfTheChildrenAct1989 extends ChildrensHomeType
+  case object ResidentialSpecialSchool extends ChildrensHomeType
+  case object BoardingSchool extends ChildrensHomeType
+  case object ChildrensHome extends ChildrensHomeType
 }
+
+case class MaxChildrenPerCategory(
+  emotional: Int,
+  physical: Int,
+  learning: Int,
+  mental: Int,
+  drug: Int,
+  alcohol: Int,
+  eyesight: Int
+)
 
 sealed trait Service
 case class ChildrenHome(
-      establishmentType: ChildrensHomeType,
-      regPlacesNo: Int,
-      homeSingleSex: Boolean,
-      maxChildrenEmotional: Int,
-      maxChildrenPhysical: Int,
-      maxChildrenLearning: Int,
-      maxChildrenMental: Int,
-      maxChildrenDrug: Int,
-      maxChildrenAlcohol: Int,
-      maxChildrenEyesight: Int,
-      care4Adults: Option[String],
-      ageRange: (Int, Int),
-      childrenSelectionCriteria: Option[String],
-      facilitiesServiceDetails: String,
-      protectingHealthDetails: String,
-      fireEmergencyPrecautions: String,
-      religiousObservence: String,
-      contactChildRelatives: String,
-      stepsHomeLocation: String,
-      childrenConcernsComplaints: String,
-      childrenEducation: String,
-      placementReviewing: String,
-      indepPersonReg43CH2015: Boolean,
-      establishmentCareQualCom: Boolean,
-      shortBreaksService: Boolean
+  establishmentType: ChildrensHomeType,
+  regPlacesNo: Int,
+  homeSingleSex: Boolean,
+  maxChildrenPerCategory: MaxChildrenPerCategory,
+  care4Adults: Option[String],
+  ageRange: (Int, Int),
+  childrenSelectionCriteria: Option[String],
+  facilitiesServiceDetails: String,
+  protectingHealthDetails: String,
+  fireEmergencyPrecautions: String,
+  religiousObservence: String,
+  contactChildRelatives: String,
+  stepsHomeLocation: String,
+  childrenConcernsComplaints: String,
+  childrenEducation: String,
+  placementReviewing: String,
+  indepPersonReg43CH2015: Boolean,
+  establishmentCareQualCom: Boolean,
+  shortBreaksService: Boolean
 ) extends Service
 
 sealed trait AdoptionSupportType extends EnumEntry
@@ -237,18 +242,22 @@ object AdoptionSupportType extends Enum[AdoptionSupportType] {
   case object Children extends AdoptionSupportType
 }
 
+case class AdoptionSupportingAgencyServices(
+  counseling: Boolean,
+  info: Boolean,
+  birthRecords: Boolean,
+  intermediary: Boolean,
+  contactFormerFamily: Boolean,
+  therapeuticNeeds: Boolean,
+  relationAdoptiveParents: Boolean,
+  disruptionMediation: Boolean,
+  intermediaryServices: Boolean,
+  parentTraining: Boolean
+)
+
 case class AdoptionSupportingAgency(
-      adoptionSupportType: Set[AdoptionSupportType],
-      counseling: Boolean,
-      info: Boolean,
-      birthRecords: Boolean,
-      intermediary: Boolean,
-      contactFormerFamily: Boolean,
-      therapeuticNeeds: Boolean,
-      relationAdoptiveParents: Boolean,
-      disruptionMediation: Boolean,
-      intermediaryServices: Boolean,
-      parentTraining: Boolean
+  adoptionSupportType: Set[AdoptionSupportType],
+  adoptionSupportingAgencyServices : AdoptionSupportingAgencyServices
 ) extends Service
 
 sealed trait IndependentFosteringType extends EnumEntry
@@ -285,13 +294,14 @@ object VoluntaryAdoptionType extends Enum[VoluntaryAdoptionType] {
 }
 
 case class VoluntaryAdoption(
-      serviceType: Set[VoluntaryAdoptionType],
-      branches: Option[String],
-      panel: Boolean,
-      panelMoreBranches: Boolean, // This should only appear if adoptionBranches is populated (i.e. Answer==Yes)
-      birthRecordsCounselling: Boolean,
-      intermediaryServices: Boolean,
-      supportProvided: Boolean
+  serviceType: Set[VoluntaryAdoptionType],
+  branches: Option[String],
+  panel: Boolean,
+  panelMoreBranches: Boolean, // This should only appear if adoptionBranches is populated (i.e. Answer==Yes)
+  birthRecordsCounselling: Boolean,
+  intermediaryServices: Boolean,
+  supportProvided: Set[AdoptionSupportType]
+
 ) extends Service
 
 case class ResidentialHolidayScheme(
@@ -312,14 +322,15 @@ case class Signature(
 )
 
 object Signature {
-  sealed trait OnBehalfOf
-  object OnBehalfOf {
-    case object Company extends OnBehalfOf
-    case object Partnership extends OnBehalfOf
-    case object StatutoryBody extends OnBehalfOf
-    case object Committee extends OnBehalfOf
-    final case class Other(details: String) extends OnBehalfOf    
-  }
+  case class OnBehalfOf(text: String)
+//   sealed trait OnBehalfOf
+//   object OnBehalfOf {
+//     case object Company extends OnBehalfOf
+//     case object Partnership extends OnBehalfOf
+//     case object StatutoryBody extends OnBehalfOf
+//     case object Committee extends OnBehalfOf
+//     final case class Other(details: String) extends OnBehalfOf    
+//   }
 }
 
 object Cs1Journey {
@@ -339,8 +350,8 @@ object Cs1Journey {
       UniformAsk[OrganisationType,?],
       UniformAsk[Address,?]
     ],
-    Fx.fx12[
-      UniformAsk[Option[HoldingCompany],?],
+    Fx.fx11[
+      UniformAsk[HoldingCompany,?],
       UniformAsk[Option[Individual],?],
       UniformAsk[Individual,?],
       UniformAsk[Site,?],      
@@ -348,16 +359,18 @@ object Cs1Journey {
       UniformAsk[Option[Option[File]],?],
       UniformAsk[Signature,?],
       UniformAsk[Option[Staff],?],
-      UniformAsk[Option[Site],?],
       UniformAsk[File,?],
-      UniformAsk[(Int,Int),?],
+      UniformAsk[(Int,Int,Boolean),?],
       UniformAsk[Int,?]      
     ]],
-    Fx.fx4[
+    Fx.fx7[
       UniformAsk[ChildrensHomeType,?],
       UniformAsk[Set[VoluntaryAdoptionType],?],
       UniformAsk[IndependentFosteringType,?],
-      UniformAsk[Set[AdoptionSupportType],?]
+      UniformAsk[Set[AdoptionSupportType],?],
+      UniformAsk[(Int,Int),?],
+      UniformAsk[AdoptionSupportingAgencyServices, ?],
+      UniformAsk[MaxChildrenPerCategory, ?]
     ]
   ]
 
@@ -374,7 +387,7 @@ object Cs1Journey {
       : _uniform[OrganisationSector,?]
       : _uniform[OrganisationType,?]
       : _uniform[Address,?]
-      : _uniform[Option[HoldingCompany],?]
+      : _uniform[HoldingCompany,?]
       : _uniform[Option[Individual],?]
       : _uniform[Individual,?]
       : _uniform[Site,?]
@@ -382,15 +395,23 @@ object Cs1Journey {
       : _uniform[Option[Option[File]],?]
       : _uniform[Signature,?]
       : _uniform[Option[Staff],?]
-      : _uniform[Option[Site],?]
       : _uniform[File,?]
-      : _uniform[(Int,Int),?]
+      : _uniform[(Int,Int),?]    
+      : _uniform[(Int,Int,Boolean),?]
       : _uniform[Int,?]
       : _uniform[ChildrensHomeType,?]
       : _uniform[Set[VoluntaryAdoptionType],?]
       : _uniform[IndependentFosteringType,?]
       : _uniform[Set[AdoptionSupportType],?]
+      : _uniform[AdoptionSupportingAgencyServices,?]
+      : _uniform[MaxChildrenPerCategory, ?]    
   ]: Eff[R, Cs1Form] = {
+
+    // the 'or' boolean monoid - we need this for 'emptyUnless'
+    implicit val mbool = new cats.Monoid[Boolean] {
+      def empty = false
+      def combine(a: Boolean, b: Boolean) = a || b
+    }
 
     def applicantProgram(applicantType: ApplicantType): Eff[R, Applicant] = {
       applicantType match {
@@ -408,7 +429,7 @@ object Cs1Journey {
           uask[R,Option[String]]("charityNumber"),
           uask[R,Option[String]]("companyNumber"),
           uask[R,Boolean]("commsOptOut"),
-          uask[R,Option[HoldingCompany]]("holdingCompany"),
+          uask[R,HoldingCompany]("holdingCompany") when uask[R,Boolean]("holdingCompanyOption"),
           uask[R,Individual]("manager"), //
           uask[R,Option[Individual]]("organisationMembers"), // list
           uask[R,Option[Individual]]("membersDisqualified") // list
@@ -427,13 +448,7 @@ object Cs1Journey {
         establishmentType          <- uask[R, ChildrensHomeType]("establishmentType")
         regPlacesNo                <- uask[R, Int]("regPlacesNo")
         homeSingleSex              <- uask[R, Boolean]("homeSingleSex")
-        maxChildrenEmotional       <- uask[R, Int]("maxChildrenEmotional")
-        maxChildrenPhysical        <- uask[R, Int]("maxChildrenPhysical")
-        maxChildrenLearning        <- uask[R, Int]("maxChildrenLearning")
-        maxChildrenMental          <- uask[R, Int]("maxChildrenMental")
-        maxChildrenDrug            <- uask[R, Int]("maxChildrenDrug")
-        maxChildrenAlcohol         <- uask[R, Int]("maxChildrenAlcohol")
-        maxChildrenEyesight        <- uask[R, Int]("maxChildrenEyesight")
+        maxChildrenPerCategory     <- uask[R, MaxChildrenPerCategory]("maxChildrenPerCategory")
         care4Adults                <- uask[R, Option[String]]("care4Adults")
         ageRange                   <- uask[R, (Int, Int)]("ageRange")
         childrenSelectionCriteria  <- uask[R, Option[String]]("childrenSelectionCriteria")
@@ -450,9 +465,7 @@ object Cs1Journey {
         establishmentCareQualCom   <- uask[R, Boolean]("establishmentCareQualCom")
         shortBreaksService         <- uask[R, Boolean]("shortBreaksService")
       } yield ChildrenHome(
-        establishmentType, regPlacesNo, homeSingleSex, maxChildrenEmotional,
-        maxChildrenPhysical, maxChildrenLearning, maxChildrenMental, maxChildrenDrug,
-        maxChildrenAlcohol, maxChildrenEyesight, care4Adults, ageRange,
+        establishmentType, regPlacesNo, homeSingleSex, maxChildrenPerCategory, care4Adults, ageRange,
         childrenSelectionCriteria, facilitiesServiceDetails, protectingHealthDetails,
         fireEmergencyPrecautions, religiousObservence, contactChildRelatives,
         stepsHomeLocation, childrenConcernsComplaints, childrenEducation,
@@ -462,20 +475,11 @@ object Cs1Journey {
 
       case ServiceType.AdoptionSupportingAgency => (
         uask[R, Set[AdoptionSupportType]]("adoptionSupportType"),
-        uask[R, Boolean]("counseling"),
-        uask[R, Boolean]("info"),
-        uask[R, Boolean]("birthRecords"),
-        uask[R, Boolean]("intermediary"),
-        uask[R, Boolean]("contactFormerFamily"),
-        uask[R, Boolean]("therapeuticNeeds"),
-        uask[R, Boolean]("relationAdoptiveParents"),
-        uask[R, Boolean]("disruptionMediation"),
-        uask[R, Boolean]("intermediaryServices"),
-        uask[R, Boolean]("parentTraining")
+        uask[R, AdoptionSupportingAgencyServices]("adoptionSupportingAgencyServices")
       ).mapN(AdoptionSupportingAgency)
 
       case ServiceType.IndependentFosteringAgency => (
-        uask[R, IndependentFosteringType]("serviceType"),
+        uask[R, IndependentFosteringType]("independentFosteringType"),
         uask[R, Boolean]("parentChildrenAct1989"),
         uask[R, Boolean]("panel"),
         uask[R, Boolean]("panelVarious"),
@@ -493,13 +497,13 @@ object Cs1Journey {
       ).mapN(ResidentialFamilyCentre)
 
       case ServiceType.VoluntaryAdoption => (
-        uask[R, Set[VoluntaryAdoptionType]]("serviceType"),
+        uask[R, Set[VoluntaryAdoptionType]]("voluntaryAdoptionType"),
         uask[R, Option[String]]("branches"),
         uask[R, Boolean]("panel"),
         uask[R, Boolean]("panelMoreBranches"),
         uask[R, Boolean]("birthRecordsCounselling"),
         uask[R, Boolean]("intermediaryServices"),
-        uask[R, Boolean]("supportProvided")
+        uask[R, Set[AdoptionSupportType]]("supportProvidedDetail") emptyUnless uask[R, Boolean]("supportProvided")
       ).mapN(VoluntaryAdoption)
 
       case ServiceType.ResidentialHolidayScheme => (
@@ -525,7 +529,7 @@ object Cs1Journey {
       targetOpDate               <- uask[R, Date]("targetOpDate")
       applicant                  <- applicantProgram(applicantType)
       establishment              <- uask[R, Establishment]("establishment")
-      otherPremises              <- uask[R, Option[Site]]("otherPremises") // should be list
+      otherPremises              <- uask[R, Site]("otherPremises") when (uask[R, Boolean]("haveOtherPremises")) // Option[Site] not compiling for some reason
       travelArrangements         <- uask[R, String]("travelArrangements") when (otherPremises.toList.size >1)
       planningPermit             <- if (
         List(
@@ -538,9 +542,8 @@ object Cs1Journey {
       accessReqDisabilityAct2005 <- uask[R, Option[String]]("accessReqDisabilityAct2005")
       premisesSecurity           <- uask[R, String]("premisesSecurity")
       staffPosts                 <- uask[R, Option[Staff]]("staffPosts") // list
-      staffPostsTimes            <- uask[R, (Int,Int)]("staffPosts") emptyUnless staffPosts.nonEmpty
-      staffLivingPremises        <- uask[R, Boolean]("staffLivingPremises")
-
+      staffPostsTimes            <- uask[R, (Int,Int,Boolean)]("staffPostsTimes") emptyUnless staffPosts.nonEmpty
+      service                      <- serviceProgram(serviceType)
       establishmentChargesRange     <- uask[R, String]("establishmentChargesRange")
       managerTitle                  <- uask[R, String]("managerTitle")
       managerForename               <- uask[R, String]("managerForename")
@@ -573,7 +576,7 @@ object Cs1Journey {
       premisesSecurity,
       staffPosts,
       staffPostsTimes,      
-      staffLivingPremises,
+      service,
       establishmentChargesRange,
       managerTitle,
       managerForename,

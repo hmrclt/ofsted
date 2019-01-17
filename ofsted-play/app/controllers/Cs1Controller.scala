@@ -15,7 +15,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.i18n._
 import ofsted._
 
-import ltbs.uniform.datapipeline.{Messages => _, _}
+import ltbs.uniform.web.{Messages => _, _}, parser._
+import ltbs.uniform.ErrorTree
+import play.twirl.api.Html
 import InferParser._
 import ltbs.uniform.widgets.govuk._
 import cs1._
@@ -26,46 +28,53 @@ import java.time.{LocalDate => Date}
 @Singleton
 class Cs1Controller @Inject() (val controllerComponents: ControllerComponents) extends BaseController with PlayInterpreter with I18nSupport {
 
+  def messages(request: Request[AnyContent]): ltbs.uniform.web.Messages = convertMessages(messagesApi.preferred(request))
+
+  def renderForm(key: String, errors: ErrorTree, form: Html, breadcrumbs: List[String], request: Request[AnyContent], messagesIn: ltbs.uniform.web.Messages): Html = {
+    views.html.chrome(key, errors, form, breadcrumbs)(messagesIn, request)
+  }
+
   import Cs1Journey._
-  def run(key: String) = Action.async { implicit request =>
+  def run(implicit key: String) = Action.async { implicit request =>
 
-    def inferForm[A](implicit parser: DataParser[A], html: HtmlForm[A]) = inferWebMonadForm[A](views.html.chrome.apply)
-
-    def dummyForm[A]: WebMonadForm[A] = ???
+    def dummyForm[A]: PlayForm[A] = new PlayForm[A] {
+      def decode(out: Encoded): Either[ErrorTree,A] = ???
+      def encode(in: A): Encoded = ???
+      def receiveInput(data: Request[AnyContent]): Encoded = ???
+      def render(key: String, existing: Option[Encoded], data: Request[AnyContent], errors: ErrorTree): Html = ???
+    }
     
     runWeb(
       program = program[FxAppend[Stack, PlayStack]]
-        .useForm(inferForm[ServiceType]				       )
-        .useForm(inferForm[ApplicantType]			       )
-        .useForm(inferForm[Boolean]				       )
-        .useForm(inferForm[Option[String]]			       )
-        .useForm(inferForm[Option[RegisteredEstablishmentOrAgency]]     )
-        .useForm(inferForm[Set[Act]]				       )
-        .useForm(inferForm[String]				       )
-        .useForm(inferForm[Option[RefusedApplication]]		       )
-        .useForm(inferForm[Date]					       )
-        .useForm(inferForm[OrganisationSector]			       )
-        .useForm(inferForm[OrganisationType]			       )
-        .useForm(inferForm[Address]				       )
-        .useForm(inferForm[Option[HoldingCompany]]		       )
-        .useForm(inferForm[Option[Individual]]			       )
-        .useForm(inferForm[Individual]                                  )
+        .useForm(PlayForm.automatic[ServiceType])
+        .useForm(PlayForm.automatic[ApplicantType])
+        .useForm(PlayForm.automatic[Boolean])
+        .useForm(PlayForm.automatic[Option[String]])
+        .useForm(PlayForm.automatic[Option[RegisteredEstablishmentOrAgency]])
+        .useForm(PlayForm.automatic[Set[Act]])
+        .useForm(PlayForm.automatic[String])
+        .useForm(PlayForm.automatic[Option[RefusedApplication]])
+        .useForm(PlayForm.automatic[Date])
+        .useForm(PlayForm.automatic[OrganisationSector])
+        .useForm(PlayForm.automatic[OrganisationType])
+        .useForm(PlayForm.automatic[Address])
+        .useForm(PlayForm.automatic[Option[HoldingCompany]])
+        .useForm(PlayForm.automatic[Option[Individual]])
+        .useForm(PlayForm.automatic[Individual])
         .useForm(dummyForm[Site])
-        .useForm(inferForm[Establishment])
+        .useForm(PlayForm.automatic[Establishment])
         .useForm(dummyForm[Option[Option[File]]])
         .useForm(dummyForm[Signature])
-        .useForm(inferForm[Option[Staff]])
+        .useForm(PlayForm.automatic[Option[Staff]])
         .useForm(dummyForm[Option[Site]])
         .useForm(dummyForm[File])
-        .useForm(inferForm[(Int,Int)])
-        .useForm(inferForm[Int])
-        .useForm(inferForm[ChildrensHomeType])
-        .useForm(inferForm[Set[VoluntaryAdoptionType]])
-        .useForm(inferForm[IndependentFosteringType])
-        .useForm(inferForm[Set[AdoptionSupportType]])
+        .useForm(PlayForm.automatic[(Int,Int)])
+        .useForm(PlayForm.automatic[Int])
+        .useForm(PlayForm.automatic[ChildrensHomeType])
+        .useForm(PlayForm.automatic[Set[VoluntaryAdoptionType]])
+        .useForm(PlayForm.automatic[IndependentFosteringType])
+        .useForm(PlayForm.automatic[Set[AdoptionSupportType]])
         ,
-      key,
-      request,
       persistence
     )(
       a => Future.successful(Ok(a.toString))

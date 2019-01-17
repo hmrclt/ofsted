@@ -7,10 +7,10 @@
 # GET        /                    controllers.HomeController.index(page: Long ?= 1)
 
 
-GET         /health-declaration/                                       controllers.HealthDeclarationController.run(id = "")
-GET         /health-declaration/:id                                    controllers.HealthDeclarationController.run(id: String)
-POST        /health-declaration/                                       controllers.HealthDeclarationController.run(id = "")
-POST        /health-declaration/:id                                    controllers.HealthDeclarationController.run(id: String)
+# GET         /health-declaration/                                       controllers.HealthDeclarationController.run(id = "")
+# GET         /health-declaration/:id                                    controllers.HealthDeclarationController.run(id: String)
+# POST        /health-declaration/                                       controllers.HealthDeclarationController.run(id = "")
+# POST        /health-declaration/:id                                    controllers.HealthDeclarationController.run(id: String)
 
 GET         /sc1/                                       controllers.Cs1Controller.run(id = "")
 GET         /sc1/:id                                    controllers.Cs1Controller.run(id: String)
