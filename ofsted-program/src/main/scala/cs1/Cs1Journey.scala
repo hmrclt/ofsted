@@ -3,335 +3,11 @@ package ofsted.cs1
 import ltbs.uniform._
 import org.atnos.eff._
 import cats.implicits._
-import enumeratum._
 import ofsted._
 import java.time.{LocalDate => Date}
+
 //import java.io.File
-
-case class File(file: String)
-
-sealed trait ServiceType extends EnumEntry
-object ServiceType extends Enum[ServiceType] {
-
-  val values = findValues
-
-  case object ChildrenHome extends ServiceType
-  case object AdoptionSupportingAgency extends ServiceType
-  case object IndependentFosteringAgency extends ServiceType
-  case object ResidentialFamilyCentre extends ServiceType
-  case object VoluntaryAdoption extends ServiceType
-  case object ResidentialHolidayScheme extends ServiceType
-}
-
-sealed trait ApplicantType extends EnumEntry
-object ApplicantType extends Enum[ApplicantType] {
-  val values = findValues
-  case object Individual extends ApplicantType
-  case object Organisation extends ApplicantType
-  case object Partnership extends ApplicantType
-}
-
-sealed trait Act extends EnumEntry
-object Act extends Enum[Act] {
-  val values = findValues
-  case object RegHomes1984 extends Act
-  case object RegHomes1991 extends Act
-  case object ChildrenAct1989 extends Act
-  case object ChildcareAct2006 extends Act
-  case object NursesAgenciesAct1957 extends Act
-  case object CareStdAct2000 extends Act
-  case object HealthSocialCareAct2008 extends Act
-}
-
-sealed trait Applicant
-case class Individual (
-  title: String,
-  firstName: String,
-  surname: String,
-  dateOfBirth: Date,
-  position: String,
-  management: Boolean,
-  contactChildren: Boolean
-) extends Applicant
-
-sealed trait OrgOrPartnership extends Applicant {
-  def refusedApplication: Option[RefusedApplication]
-  def name: String
-  def address: Address
-}
-
-sealed trait OrganisationType extends EnumEntry
-object OrganisationType extends Enum[OrganisationType] {
-  val values = findValues
-  case object Company extends OrganisationType
-  case object StatutoryBody extends OrganisationType
-  case object Committee extends OrganisationType
-  case object Other extends OrganisationType
-}
-
-sealed trait OrganisationSector extends EnumEntry
-object OrganisationSector extends Enum[OrganisationSector] {
-  val values = findValues
-  case object LocalAuthority extends OrganisationSector
-  case object HealthAuthority extends OrganisationSector
-  case object Voluntary extends OrganisationSector
-  case object Private extends OrganisationSector
-}
-
-case class Subsidiary (
-  name: String, //
-  address: Address, //
-  email: String, //
-  telephone: String, //
-  ofstedRegNo: String //
-)
-
-case class HoldingCompany (
-  name: String, //
-  address: Address, //
-  email: String, //
-  telephone: String, //
-  creationDate: Date, //
-  charityNumber: Option[String], //
-  companyNumber: Option[String], //
-  subsidiaries: Option[Subsidiary] //
-)
-
-case class Organisation (
-  refusedApplication: Option[RefusedApplication], //
-  organisationSector: OrganisationSector, //
-  organisationType: OrganisationType, //
-  name: String, //
-  address: Address, //
-  email: String, //
-  telephone: String, //
-  creationDate: Date, //
-  charityNumber: Option[String], //
-  companyNumber: Option[String], //
-  commsOptOut: Boolean, //
-  holdingCompany: Option[HoldingCompany], //
-  manager: Individual, // 
-  members: Option[Individual], // list 
-  membersDisqualified: Option[Individual] // list
-) extends OrgOrPartnership
-
-case class Partnership (
-  refusedApplication: Option[RefusedApplication],
-  name: String,
-  address: Address,
-  members: Option[Individual]
-) extends OrgOrPartnership
-
-case class RegisteredEstablishmentOrAgency (
-  name: String,
-  address: Address,
-  ofstedRegNo: Option[String]
-)
-
-case class Establishment (
-  name: String,
-  address: Address,
-  telephone: String,
-  email: String,
-  soleUse: Option[String]
-)
-
-case class Site (
-  address: Address,
-  telephone: String,
-  fax: String,  
-  email: String,
-  description: String,  
-  soleUse: Option[String],
-  pendingWork: Option[(String, Date)]
-)
-
-case class Cs1Form(
-  serviceType : ServiceType,
-  applicantType : ApplicantType,
-  isEducationalEstablishment: Boolean,
-  dfeNumber: Option[String],
-  rea: Option[RegisteredEstablishmentOrAgency],
-  financialViability: Option[String],
-  interestsRea: Option[RegisteredEstablishmentOrAgency],
-  applicableActs: Set[Act],
-  moreDetails: Option[String],
-  targetOpDate: Date,
-  applicant: Applicant,
-  establishment: Establishment,
-  otherPremises: Option[Site],
-  travelArrangements: Option[String],
-  planningPermit: Option[Option[File]],
-  okWithoutPermitChange: Option[Boolean],
-  accessReqDisabilityAct2005: Option[String],
-  premisesSecurity: String,
-  staffPosts: Option[Staff],
-  staffPostsTimes: (Int,Int,Boolean),
-  service: Service,
-  establishmentChargesRange: String,
-  managerTitle: String,
-  managerForename: String,
-  managerSurname: String,
-  managerOtherAgency: Option[String],
-  checksAdoptionRegulations2005: Boolean,
-  proceduresAndPolicies: File,
-  noPreviousApplicationSince30Sep2010: Boolean,
-  signature: Signature,
-  researchOrgComsOptOut: Boolean
-)
-
-case class RefusedApplication(
-  refAppName: String,
-  refAppOfstedRegNo: String,
-  refAppOrgID: String,
-  refAppDetails: String
-)
-
-case class Staff(
-  staffPosition: String,
-  staffDuties: String
-)
-
-sealed trait ChildrensHomeType extends EnumEntry
-object ChildrensHomeType extends Enum[ChildrensHomeType] {
-  val values = findValues
-  case object SecureChildrensHome extends ChildrensHomeType
-  case object RefugeUnderSection51OfTheChildrenAct1989 extends ChildrensHomeType
-  case object ResidentialSpecialSchool extends ChildrensHomeType
-  case object BoardingSchool extends ChildrensHomeType
-  case object ChildrensHome extends ChildrensHomeType
-}
-
-case class MaxChildrenPerCategory(
-  emotional: Int,
-  physical: Int,
-  learning: Int,
-  mental: Int,
-  drug: Int,
-  alcohol: Int,
-  eyesight: Int
-)
-
-sealed trait Service
-case class ChildrenHome(
-  establishmentType: ChildrensHomeType,
-  regPlacesNo: Int,
-  homeSingleSex: Boolean,
-  maxChildrenPerCategory: MaxChildrenPerCategory,
-  care4Adults: Option[String],
-  ageRange: (Int, Int),
-  childrenSelectionCriteria: Option[String],
-  facilitiesServiceDetails: String,
-  protectingHealthDetails: String,
-  fireEmergencyPrecautions: String,
-  religiousObservence: String,
-  contactChildRelatives: String,
-  stepsHomeLocation: String,
-  childrenConcernsComplaints: String,
-  childrenEducation: String,
-  placementReviewing: String,
-  indepPersonReg43CH2015: Boolean,
-  establishmentCareQualCom: Boolean,
-  shortBreaksService: Boolean
-) extends Service
-
-sealed trait AdoptionSupportType extends EnumEntry
-object AdoptionSupportType extends Enum[AdoptionSupportType] {
-  val values = findValues
-  case object Adults extends AdoptionSupportType
-  case object Children extends AdoptionSupportType
-}
-
-case class AdoptionSupportingAgencyServices(
-  counseling: Boolean,
-  info: Boolean,
-  birthRecords: Boolean,
-  intermediary: Boolean,
-  contactFormerFamily: Boolean,
-  therapeuticNeeds: Boolean,
-  relationAdoptiveParents: Boolean,
-  disruptionMediation: Boolean,
-  intermediaryServices: Boolean,
-  parentTraining: Boolean
-)
-
-case class AdoptionSupportingAgency(
-  adoptionSupportType: Set[AdoptionSupportType],
-  adoptionSupportingAgencyServices : AdoptionSupportingAgencyServices
-) extends Service
-
-sealed trait IndependentFosteringType extends EnumEntry
-object IndependentFosteringType extends Enum[IndependentFosteringType] {
-  val values = findValues
-  case object Option1 extends IndependentFosteringType
-  case object Option2 extends IndependentFosteringType
-}
-
-case class IndependentFosteringAgency(
-      serviceType: IndependentFosteringType,
-      parentChildrenAct1989: Boolean,
-      panel: Boolean,
-      panelVarious: Boolean,
-      panelJoint: Boolean
-) extends Service
-
-case class ResidentialFamilyCentre(
-      familiesAccomodated: Int,
-      emergencyAdmissions: Boolean,
-      courtReferrals: Boolean,
-      refuge: Boolean,
-      careForAdultsWithoutChildren: Boolean,
-      admitChildrenWithCarers: Boolean,
-      otherService: Boolean
-) extends Service
-
-sealed trait VoluntaryAdoptionType extends EnumEntry
-object VoluntaryAdoptionType extends Enum[VoluntaryAdoptionType] {
-  val values = findValues
-  case object Domestic extends VoluntaryAdoptionType
-  case object InterCountry extends VoluntaryAdoptionType
-  case object Support extends VoluntaryAdoptionType  
-}
-
-case class VoluntaryAdoption(
-  serviceType: Set[VoluntaryAdoptionType],
-  branches: Option[String],
-  panel: Boolean,
-  panelMoreBranches: Boolean, // This should only appear if adoptionBranches is populated (i.e. Answer==Yes)
-  birthRecordsCounselling: Boolean,
-  intermediaryServices: Boolean,
-  supportProvided: Set[AdoptionSupportType]
-
-) extends Service
-
-case class ResidentialHolidayScheme(
-      ageRange: (Int, Int),
-      singleSex: Boolean,
-      selectionCriteria: Option[String],
-      facilitiesServicesDetails: String,
-      missingChildrenProcedure: String,
-      concernsComplaints: String
-) extends Service
-
-case class Signature(
-  title: String,
-  forename: String,
-  surname: String,
-  userStatus: String,
-  onBehalfOf: Signature.OnBehalfOf
-)
-
-object Signature {
-  case class OnBehalfOf(text: String)
-//   sealed trait OnBehalfOf
-//   object OnBehalfOf {
-//     case object Company extends OnBehalfOf
-//     case object Partnership extends OnBehalfOf
-//     case object StatutoryBody extends OnBehalfOf
-//     case object Committee extends OnBehalfOf
-//     final case class Other(details: String) extends OnBehalfOf    
-//   }
-}
+case class File(file: String) // not supported by JS
 
 object Cs1Journey {
 
@@ -444,34 +120,27 @@ object Cs1Journey {
     }
 
     def serviceProgram(serviceType: ServiceType): Eff[R, Service] = serviceType match {
-      case ServiceType.ChildrenHome => for {
-        establishmentType          <- uask[R, ChildrensHomeType]("establishmentType")
-        regPlacesNo                <- uask[R, Int]("regPlacesNo")
-        homeSingleSex              <- uask[R, Boolean]("homeSingleSex")
-        maxChildrenPerCategory     <- uask[R, MaxChildrenPerCategory]("maxChildrenPerCategory")
-        care4Adults                <- uask[R, Option[String]]("care4Adults")
-        ageRange                   <- uask[R, (Int, Int)]("ageRange")
-        childrenSelectionCriteria  <- uask[R, Option[String]]("childrenSelectionCriteria")
-        facilitiesServiceDetails   <- uask[R, String]("facilitiesServiceDetails")
-        protectingHealthDetails    <- uask[R, String]("protectingHealthDetails")
-        fireEmergencyPrecautions   <- uask[R, String]("fireEmergencyPrecautions")
-        religiousObservence        <- uask[R, String]("religiousObservence")
-        contactChildRelatives      <- uask[R, String]("contactChildRelatives")
-        stepsHomeLocation          <- uask[R, String]("stepsHomeLocation")
-        childrenConcernsComplaints <- uask[R, String]("childrenConcernsComplaints")
-        childrenEducation          <- uask[R, String]("childrenEducation")
-        placementReviewing         <- uask[R, String]("placementReviewing")
-        indepPersonReg43CH2015     <- uask[R, Boolean]("indepPersonReg43CH2015")
-        establishmentCareQualCom   <- uask[R, Boolean]("establishmentCareQualCom")
-        shortBreaksService         <- uask[R, Boolean]("shortBreaksService")
-      } yield ChildrenHome(
-        establishmentType, regPlacesNo, homeSingleSex, maxChildrenPerCategory, care4Adults, ageRange,
-        childrenSelectionCriteria, facilitiesServiceDetails, protectingHealthDetails,
-        fireEmergencyPrecautions, religiousObservence, contactChildRelatives,
-        stepsHomeLocation, childrenConcernsComplaints, childrenEducation,
-        placementReviewing, indepPersonReg43CH2015, establishmentCareQualCom,
-        shortBreaksService
-      )
+      case ServiceType.ChildrenHome => (
+        uask[R, ChildrensHomeType]("establishmentType"),
+        uask[R, Int]("regPlacesNo"),
+        uask[R, Boolean]("homeSingleSex"),
+        uask[R, MaxChildrenPerCategory]("maxChildrenPerCategory"),
+        uask[R, Option[String]]("care4Adults"),
+        uask[R, (Int, Int)]("ageRange"),
+        uask[R, Option[String]]("childrenSelectionCriteria"),
+        uask[R, String]("facilitiesServiceDetails"),
+        uask[R, String]("protectingHealthDetails"),
+        uask[R, String]("fireEmergencyPrecautions"),
+        uask[R, String]("religiousObservence"),
+        uask[R, String]("contactChildRelatives"),
+        uask[R, String]("stepsHomeLocation"),
+        uask[R, String]("childrenConcernsComplaints"),
+        uask[R, String]("childrenEducation"),
+        uask[R, String]("placementReviewing"),
+        uask[R, Boolean]("indepPersonReg43CH2015"),
+        uask[R, Boolean]("establishmentCareQualCom"),
+        uask[R, Boolean]("shortBreaksService")
+      ).mapN(ChildrenHome)
 
       case ServiceType.AdoptionSupportingAgency => (
         uask[R, Set[AdoptionSupportType]]("adoptionSupportType"),
@@ -517,6 +186,7 @@ object Cs1Journey {
     }
 
     for {
+      signature                           <- uask[R, Signature]("signature")      
       serviceType                <- uask[R, ServiceType]("serviceType")
       applicantType              <- uask[R, ApplicantType]("applicantType")
       isEducationalEstablishment <- uask[R, Boolean]("isEducationalEstablishment")
@@ -551,9 +221,8 @@ object Cs1Journey {
       managerOtherAgency            <- uask[R, Option[String]]("managerOtherAgency")
       checksAdoptionRegulations2005 <- uask[R, Boolean]("checksAdoptionRegulations2005")
       proceduresAndPolicies         <- uask[R, File]("proceduresAndPolicies")
-
       noPreviousApplicationSince30Sep2010 <- uask[R, Boolean]("noPreviousApplicationSince30Sep2010")
-      signature                           <- uask[R, Signature]("signature")
+
       researchOrgComsOptOut               <- uask[R, Boolean]("researchOrgComsOptOut")
     } yield Cs1Form(
       serviceType,
